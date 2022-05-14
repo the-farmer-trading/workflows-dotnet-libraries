@@ -1,0 +1,63 @@
+name: publish-library
+
+on:
+  workflow_call:
+    inputs:
+      projectName: 
+        required: true
+        type: string    
+      projectDirectory: 
+        required: true
+        type: string  
+      targetRepositoryDirectory: 
+        required: true
+        type: string  
+      directoryBuildPropsPath:
+        required: true
+        type: string
+    secrets:
+      username: 
+        required: true
+      password:
+        required: true        
+
+jobs:
+
+  get-semver:
+    runs-on: ubuntu-latest
+    outputs: 
+      semanticVersion: ${{ steps.get-semantic-version.outputs.group1 }}
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
+        
+    - name: SEMVER - Load
+      id: read-properties
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ${{ inputs.directoryBuildPropsPath }}
+        
+    - name: SEMVER - Determine.
+      id: get-semantic-version
+      uses: actions-ecosystem/action-regex-match@v2
+      with:
+        text: ${{ steps.read-properties.outputs.content }}
+        regex: '<Version>(.*?)</Version>'  
+  
+  publish:
+    runs-on: ubuntu-latest
+    needs: get-semver
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
+    
+    - name: NUGET - Source
+      run: dotnet nuget add source https://farmer.jfrog.io/artifactory/api/nuget/v3/core-nuget-local --name Artifactory --username ${{ secrets.username }} --password ${{ secrets.password }} --store-password-in-clear-text
+        
+    - name: NUGET - Package
+      run: dotnet pack ./${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
+
+    - name: NUGET - Push
+      if: ${{ needs.get-semver.outputs.semanticVersion != 'master'}}
+      run: dotnet nuget push ./build/${{ inputs.projectName }}.${{ needs.get-semver.outputs.semanticVersion }}.nupkg --source https://farmer.jfrog.io/artifactory/api/nuget/v3/core-nuget-local/${{ inputs.targetRepositoryDirectory }}/${{ inputs.projectName }} --api-key ${{ secrets.username }}:${{ secrets.password }} --skip-duplicate
+
