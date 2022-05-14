@@ -56,12 +56,12 @@ jobs:
       uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
     
     - name: NUGET - Source
-      run: dotnet nuget add source ${{ input.repositoryUrl }} --name Artifactory --username ${{ secrets.username }} --password ${{ secrets.password }} --store-password-in-clear-text
+      run: dotnet nuget add source ${{ inputs.repositoryUrl }} --name Artifactory --username ${{ secrets.username }} --password ${{ secrets.password }} --store-password-in-clear-text
         
     - name: NUGET - Package
       run: dotnet pack ./${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
 
     - name: NUGET - Push
       if: ${{ needs.get-semver.outputs.semanticVersion != 'master'}}
-      run: dotnet nuget push ./build/${{ inputs.projectName }}.${{ needs.get-semver.outputs.semanticVersion }}.nupkg --source  ${{ input.repositoryUrl }}/${{ inputs.targetRepositoryDirectory }}/${{ inputs.projectName }} --api-key ${{ secrets.username }}:${{ secrets.password }} --skip-duplicate
+      run: dotnet nuget push ./build/${{ inputs.projectName }}.${{ needs.get-semver.outputs.semanticVersion }}.nupkg --source  ${{ inputs.repositoryUrl }}/${{ inputs.targetRepositoryDirectory }}/${{ inputs.projectName }} --api-key ${{ secrets.username }}:${{ secrets.password }} --skip-duplicate
 
