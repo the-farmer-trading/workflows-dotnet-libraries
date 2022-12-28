@@ -19,7 +19,6 @@ on:
         required: true
         type: string
       solutionDirectory:
-        required: true
         type: string
         default: "Sources"
         
