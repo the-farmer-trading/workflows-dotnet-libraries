@@ -18,6 +18,10 @@ on:
       repositoryUrl:
         required: true
         type: string
+      solutionDirectory:
+        required: true
+        type: string
+        default: "Sources"
         
     secrets:
       username: 
@@ -59,7 +63,7 @@ jobs:
       run: dotnet nuget add source ${{ inputs.repositoryUrl }} --name Artifactory --username ${{ secrets.username }} --password ${{ secrets.password }} --store-password-in-clear-text
         
     - name: NUGET - Package
-      run: dotnet pack ./${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
+      run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
 
     - name: NUGET - Push
       if: ${{ needs.get-semver.outputs.semanticVersion != 'master'}}
