@@ -15,6 +15,7 @@ on:
       directoryBuildPropsPath:
         required: true
         type: string
+        default: "Sources/Directory.Build.props"
       solutionDirectory:
         type: string
         default: "Sources"
