@@ -20,6 +20,8 @@ on:
         default: "Sources"
         
     secrets:
+      username: 
+        required: true
       token: 
         required: true
 
