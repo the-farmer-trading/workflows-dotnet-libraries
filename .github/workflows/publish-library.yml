@@ -52,18 +52,11 @@ jobs:
     steps:
     - name: Check out the repo
       uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
-    
-    - name: CLI - .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        source-url: https://nuget.pkg.github.com/the-farmer-trading/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.token }}    
 
     - name: NUGET - Package
       run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
 
     - name: NUGET - Push
       if: ${{ needs.get-semver.outputs.semanticVersion != 'master'}}
-      run: dotnet nuget push ./build/${{ inputs.projectName }}.${{ needs.get-semver.outputs.semanticVersion }}.nupkg --skip-duplicate
+      run: dotnet nuget push ./build/${{ inputs.projectName }}.${{ needs.get-semver.outputs.semanticVersion }}.nupkg --skip-duplicate --api-key ${{ secrets.token }}
 
