@@ -54,14 +54,7 @@ jobs:
       uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
        
     - name: NUGET - Source
-      run: dotnet nuget add source https://nuget.pkg.github.com/the-farmer-trading/index.json --name github --password ${{ secrets.token }} 
-
-    - name: CLI - .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        source-url: https://nuget.pkg.github.com/the-farmer-trading/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.token }}    
+      run: dotnet nuget add source https://nuget.pkg.github.com/the-farmer-trading/index.json --name github --username "x-access-token" --password ${{ secrets.token }} 
 
     - name: NUGET - Package
       run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
