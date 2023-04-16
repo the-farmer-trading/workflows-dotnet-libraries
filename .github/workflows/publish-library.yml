@@ -20,7 +20,7 @@ on:
         default: "Sources"
         
     secrets:
-      GITHUB_TOKEN: 
+      token: 
         required: true
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
       with:
         source-url: https://nuget.pkg.github.com/the-farmer-trading/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+        NUGET_AUTH_TOKEN: ${{ secrets.token }}    
 
     - name: NUGET - Package
       run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
