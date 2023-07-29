@@ -59,7 +59,7 @@ jobs:
       run: dotnet nuget add source https://nuget.pkg.github.com/the-farmer-trading/index.json --name github --username ${{ secrets.username }} --password ${{ secrets.token }} --store-password-in-clear-text
 
     - name: NUGET - Package
-      run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -c Release -o ./build 
+      run: dotnet pack ./${{ inputs.solutionDirectory }}/${{ inputs.projectDirectory }}/${{ inputs.projectName }}/${{ inputs.projectName }}.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -c Release -o ./build 
 
     - name: NUGET - Push
       if: ${{ needs.get-semver.outputs.semanticVersion != 'master'}}
